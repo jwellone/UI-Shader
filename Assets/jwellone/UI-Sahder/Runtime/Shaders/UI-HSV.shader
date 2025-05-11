@@ -168,7 +168,7 @@ Shader "UI/HSV"
                 source.x += _Hue;
                 source.y *= _Sat;
                 source.z *= _Val;
-				color.rgb = HSV2RGB(source);
+                color.rgb = HSV2RGB(source);
 
                 color.rgb *= color.a;
 
