@@ -5,8 +5,8 @@ Shader "UI/HeightMapToNormalMap"
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-        _Rate ("Rate", Range(0.0, 1.0)) = 1.0
-
+        _ScaleFactor ("Scale Factor", Range(0.0, 1.0)) = 1.0
+        _ParallaxScale ("Parallax Scale", Range(0.0, 10.0)) = 5.0
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
         _StencilOp ("Stencil Operation", Float) = 0
@@ -42,7 +42,7 @@ Shader "UI/HeightMapToNormalMap"
         Lighting Off
         ZWrite Off
         ZTest [unity_GUIZTestMode]
-        Blend One OneMinusSrcAlpha
+        Blend SrcColor OneMinusSrcAlpha
         ColorMask [_ColorMask]
 
         Pass
@@ -63,6 +63,7 @@ Shader "UI/HeightMapToNormalMap"
             struct appdata_t
             {
                 float4 vertex   : POSITION;
+                float4 color    : COLOR;
                 float2 texcoord : TEXCOORD0;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
@@ -70,6 +71,7 @@ Shader "UI/HeightMapToNormalMap"
             struct v2f
             {
                 float4 vertex   : SV_POSITION;
+                fixed4 color    : COLOR;
                 float2 texcoord  : TEXCOORD0;
                 float4 worldPosition : TEXCOORD1;
                 float4  mask : TEXCOORD2;
@@ -77,13 +79,15 @@ Shader "UI/HeightMapToNormalMap"
             };
 
             sampler2D _MainTex;
+            fixed4 _Color;
             fixed4 _TextureSampleAdd;
             float4 _ClipRect;
             float4 _MainTex_ST;
             float4 _MainTex_TexelSize;
             float _UIMaskSoftnessX;
             float _UIMaskSoftnessY;
-            float _Rate;
+            float _ScaleFactor;
+            float _ParallaxScale;
             int _UIVertexColorAlwaysGammaSpace;
 
             v2f vert(appdata_t v)
@@ -103,20 +107,30 @@ Shader "UI/HeightMapToNormalMap"
                 OUT.texcoord = TRANSFORM_TEX(v.texcoord.xy, _MainTex);
                 OUT.mask = float4(v.vertex.xy * 2 - clampedRect.xy - clampedRect.zw, 0.25 / (0.25 * half2(_UIMaskSoftnessX, _UIMaskSoftnessY) + abs(pixelSize.xy)));
 
+
+                if (_UIVertexColorAlwaysGammaSpace)
+                {
+                    if(!IsGammaSpace())
+                    {
+                        v.color.rgb = UIGammaToLinear(v.color.rgb);
+                    }
+                }
+
+                OUT.color = v.color * _Color;
                 return OUT;
             }
 
             fixed4 frag(v2f IN) : SV_Target
             {
-                float center = (tex2Dlod(_MainTex, float4(IN.texcoord, 0, 0)) + _TextureSampleAdd).r;
-                float right  = (tex2Dlod(_MainTex, float4(IN.texcoord + float2(_MainTex_TexelSize.x , 0), 0, 0)) + _TextureSampleAdd).r - center;
-                float up     = (tex2Dlod(_MainTex, float4(IN.texcoord + float2(0, _MainTex_TexelSize.y), 0, 0)) + _TextureSampleAdd).r - center;
-                float normalStrength = 100 * _Rate;
-                float3 grayNorm = cross(
-                    float3(1, 0, right * normalStrength),
-                    float3(0, 1, up * normalStrength));
+                //Round up the alpha color coming from the interpolator (to 1.0/256.0 steps)
+                //The incoming alpha could have numerical instability, which makes it very sensible to
+                //HDR color transparency blend, when it blends with the world's texture.
+                const half alphaPrecision = half(0xff);
+                const half invAlphaPrecision = half(1.0/alphaPrecision);
+                IN.color.a = round(IN.color.a * alphaPrecision)*invAlphaPrecision;
 
-                fixed4 color = fixed4(normalize(grayNorm), 1);
+                float2 uv = IN.texcoord;
+                fixed4 color = tex2D(_MainTex, uv) + _TextureSampleAdd;
 
                 #ifdef UNITY_UI_CLIP_RECT
                 half2 m = saturate((_ClipRect.zw - _ClipRect.xy - abs(IN.mask.xy)) * IN.mask.zw);
@@ -127,6 +141,16 @@ Shader "UI/HeightMapToNormalMap"
                 clip (color.a - 0.001);
                 #endif
 
+                float shiftScale = _ParallaxScale * _ScaleFactor;
+                float2 shiftX = { _MainTex_TexelSize.x * shiftScale,  0 };
+                float2 shiftZ = { 0, _MainTex_TexelSize.y * shiftScale };
+                float x1 = tex2Dlod(_MainTex, float4(uv + shiftX, 0, 0)).x;
+                float x2 = tex2Dlod(_MainTex, float4(uv - shiftX, 0, 0)).x;
+                float z1 = tex2Dlod(_MainTex, float4(uv + shiftZ, 0, 0)).x;
+                float z2 = tex2Dlod(_MainTex, float4(uv - shiftZ, 0, 0)).x;
+                float3 du = { 1, 0, _ScaleFactor * (x1 - x2) };
+                float3 dv = { 0, 1, _ScaleFactor * (z1 - z2) };
+                color.rgb = normalize(cross(du, dv)) * 0.5 + 0.5;
                 color.rgb *= color.a;
 
                 return color;
