@@ -90,8 +90,9 @@ Shader "UI/EdgeFilter"
             float _Rate;
             int _UIVertexColorAlwaysGammaSpace;
 
-            static const int _KernelNum = 9;
-            static const half _Kernel[_KernelNum] = 
+            static const int _XNum = 3;
+            static const int _YNum = 3;
+            static const half _Kernel[_XNum * _YNum] = 
             {
                 0,  1,  0,
                 1, -4,  1,
@@ -156,15 +157,17 @@ Shader "UI/EdgeFilter"
 
                 float2 uv = IN.texcoord;
                 float gray = 0.0;
-                for(int y = 0; y < 3; ++y)
+                for(int y = 0; y < _YNum; ++y)
                 {
-                    for(int x = 0; x < 3; ++x)
+                    for(int x = 0; x < _XNum; ++x)
                     {
                         half index = x + y * 3;
                         gray += GetGray(uv, x, y) * _Kernel[index];
                     }
                 }
 
+                gray = max(0, min(1, gray));
+                gray = 1 - step(gray, 1 - _Rate);
                 color.rgb = IN.color.rgb * fixed3(gray, gray, gray);
                 color.rgb *= color.a;
 
