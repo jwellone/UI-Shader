@@ -95,12 +95,16 @@ namespace jwelloneEditor
             GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
 
             CreateDestTextureIfNeeded();
-            var width = position.size.x;
+            var width = position.size.x / 2f;
             if (_destTexture != null)
             {
                 EditorGUILayout.BeginHorizontal();
-                var textureRect = GUILayoutUtility.GetRect(width, _destTexture.height * width / _destTexture.height, GUILayout.ExpandWidth(false), GUILayout.ExpandHeight(false));
+                GUILayout.FlexibleSpace();
+
+                var textureRect = GUILayoutUtility.GetRect(width, _destTexture.height * width / _destTexture.width, GUILayout.ExpandWidth(false), GUILayout.ExpandHeight(false));
                 GUI.DrawTexture(textureRect, _destTexture);
+
+                GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
             }
 
@@ -115,10 +119,13 @@ namespace jwelloneEditor
             }
 
             _material ??= new Material(previewGui?.shader);
-            if (_materialEditor == null)
+            if (_materialEditor == null && _material != null)
             {
                 _materialEditor = (MaterialEditor)Editor.CreateEditor(_material, typeof(MaterialEditor));
-                UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(_materialEditor.target, true);
+                if (_materialEditor != null)
+                {
+                    UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(_materialEditor.target, true);
+                }
             }
 
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
