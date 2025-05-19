@@ -8,9 +8,7 @@ namespace jwelloneEditor
     {
         protected override Shader? GetShader()
         {
-            var s = Shader.Find("UI/Addtive");
-            Debug.Log($"### {s}");
-            return s;
+            return Shader.Find("UI/Addtive");
         }
     }
 }
