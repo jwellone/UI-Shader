@@ -6,14 +6,13 @@ using jwellone;
 
 namespace jwelloneEditor
 {
-        public sealed class VignettePreviewGUI : UIShaderPreviewGUI
+    public sealed class VignettePreviewGUI : UIShaderPreviewGUI
     {
         Color _vignetteColor = new Color(0, 0, 0, 1);
         float _radius = 0.4f;
         float _softness = 0.1f;
         float _centerX = 0.5f;
         float _centerY = 0.5f;
-
 
         public override void OnGUI(EditorWindow parent)
         {

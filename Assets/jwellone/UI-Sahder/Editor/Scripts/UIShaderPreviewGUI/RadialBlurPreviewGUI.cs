@@ -6,7 +6,7 @@ using jwellone;
 
 namespace jwelloneEditor
 {
-    public class RadialBlurPreviewGUI : UIShaderPreviewGUI
+    public sealed class RadialBlurPreviewGUI : UIShaderPreviewGUI
     {
         bool _useDither;
         int _sampleCount = 8;

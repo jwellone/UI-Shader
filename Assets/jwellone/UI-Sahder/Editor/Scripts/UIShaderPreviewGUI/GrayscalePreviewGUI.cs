@@ -6,7 +6,7 @@ using jwellone;
 
 namespace jwelloneEditor
 {
-    public class GrayscalePreviewGUI : UIShaderPreviewGUI
+    public sealed class GrayscalePreviewGUI : UIShaderPreviewGUI
     {
         bool _isUseNTSC;
         float _rate = 0;

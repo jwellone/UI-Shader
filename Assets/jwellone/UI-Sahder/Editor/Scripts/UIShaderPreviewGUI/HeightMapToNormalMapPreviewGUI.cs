@@ -6,7 +6,7 @@ using jwellone;
 
 namespace jwelloneEditor
 {
-    public class HeightMapToNormalMapPreviewGUI : UIShaderPreviewGUI
+    public sealed class HeightMapToNormalMapPreviewGUI : UIShaderPreviewGUI
     {
         float _scaleFactor = 1f;
         float _parallaxScale = 5f;
