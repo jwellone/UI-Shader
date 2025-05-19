@@ -13,6 +13,7 @@ namespace jwelloneEditor
     {
         Vector2 _scrollPosition;
         Material? _material;
+        Texture? _textureBg;
         Texture2D? _sourceTexture;
         Texture2D? _destTexture;
         MaterialEditor? _materialEditor;
@@ -27,7 +28,7 @@ namespace jwelloneEditor
         [MenuItem("jwellone/Window/UI Shader Preview")]
         static void Init()
         {
-            var window = EditorWindow.GetWindow(typeof(UIShaderPreviewWindow));
+            var window = GetWindow(typeof(UIShaderPreviewWindow));
             window.titleContent = new("UI Shader Preview");
             window.minSize = new Vector2(512, 512);
             window.Show();
@@ -54,12 +55,15 @@ namespace jwelloneEditor
             }
 
             _popupSelectIndex = 0;
+
+            _textureBg = AssetDatabase.LoadAssetAtPath<Texture>("Assets/jwellone/UI-Sahder/Editor/Textures/preview-bg.jpg");
         }
 
         void OnDisable()
         {
             _previewGUIList.Clear();
             _sourceTexture = null;
+            _textureBg = null;
             DestroyDestTexture();
             DestroyMaterial();
             DestroyMaterialEditor();
@@ -102,6 +106,26 @@ namespace jwelloneEditor
                 GUILayout.FlexibleSpace();
 
                 var textureRect = GUILayoutUtility.GetRect(width, _destTexture.height * width / _destTexture.width, GUILayout.ExpandWidth(false), GUILayout.ExpandHeight(false));
+
+                GUI.BeginGroup(textureRect);
+                {
+                    var xLoop = Mathf.RoundToInt(textureRect.width);
+                    var yLoop = Mathf.RoundToInt(textureRect.height);
+                    var bgWidth = _textureBg!.width;
+                    var bgHeight = _textureBg!.height;
+                    var bgRect = new Rect(0, 0, bgWidth, bgHeight);
+                    for (var y = 0; y < yLoop; y += bgHeight)
+                    {
+                        for (var x = 0; x < xLoop; x += bgWidth)
+                        {
+                            bgRect.x = x;
+                            bgRect.y = y;
+                            GUI.DrawTexture(bgRect, _textureBg);
+                        }
+                    }
+                }
+                GUI.EndGroup();
+
                 GUI.DrawTexture(textureRect, _destTexture);
 
                 GUILayout.FlexibleSpace();
