@@ -76,13 +76,13 @@ namespace jwelloneEditor
         Shader? IUIShaderPreviewData.shader => Shader.Find("UI/Outline");
     }
 
-    public sealed class PosterizePreviewGUI : IUIShaderPreviewData
+    public sealed class PosterizePreviewData : IUIShaderPreviewData
     {
         string IUIShaderPreviewData.displayName => "Posterize";
         Shader? IUIShaderPreviewData.shader => Shader.Find("UI/Posterize");
     }
 
-    public sealed class RadialBlurPreviewGUI : IUIShaderPreviewData
+    public sealed class RadialBlurPreviewData : IUIShaderPreviewData
     {
         string IUIShaderPreviewData.displayName => "RadialBlur";
         Shader? IUIShaderPreviewData.shader => Shader.Find("UI/RadialBlur");
