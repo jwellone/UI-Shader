@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using jwellone;
 
 #nullable enable
 
@@ -25,8 +26,8 @@ namespace jwelloneEditor
 
         protected override void UpdateMaterialProperty()
         {
-            _material.SetInt("_OutlineSize", _size);
-            _material.SetColor("_OutlineColor", _color);
+            _material.SetInt(UIShaderProperty.outlineSize, _size);
+            _material.SetColor(UIShaderProperty.outlineColor, _color);
         }
     }
 }

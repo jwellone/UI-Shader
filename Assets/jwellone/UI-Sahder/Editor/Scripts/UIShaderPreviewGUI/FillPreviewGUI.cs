@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using jwellone;
 
 #nullable enable
 
@@ -25,8 +26,8 @@ namespace jwelloneEditor
 
         protected override void UpdateMaterialProperty()
         {
-            _material!.SetColor("_Color", _color);
-            _material!.SetFloat("_Rate", _rate);
+            _material!.SetColor(UIShaderProperty.color, _color);
+            _material!.SetFloat(UIShaderProperty.rate, _rate);
         }
     }
 }

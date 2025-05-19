@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using jwellone;
 
 #nullable enable
 
@@ -31,18 +32,18 @@ namespace jwelloneEditor
 
         protected override void UpdateMaterialProperty()
         {
-            _material.SetInt("_SampleCount", _sampleCount);
-            _material.SetFloat("_Intensity", _intensity);
-            _material.SetFloat("_CenterX", _centerX);
-            _material.SetFloat("_CenterY", _centerY);
+            _material.SetInt(UIShaderProperty.sampleCount, _sampleCount);
+            _material.SetFloat(UIShaderProperty.intensity, _intensity);
+            _material.SetFloat(UIShaderProperty.centerX, _centerX);
+            _material.SetFloat(UIShaderProperty.centerY, _centerY);
 
             if (_useDither)
             {
-                _material.EnableKeyword("RADIAL_BLUR_USE_DITHER");
+                _material.EnableKeyword(UIShaderProperty.radialBlurUseDitherKeyword);
             }
             else
             {
-                _material.DisableKeyword("RADIAL_BLUR_USE_DITHER");
+                _material.DisableKeyword(UIShaderProperty.radialBlurUseDitherKeyword);
             }
         }
     }

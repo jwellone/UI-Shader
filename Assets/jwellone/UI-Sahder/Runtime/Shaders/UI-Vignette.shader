@@ -11,8 +11,8 @@ Shader "UI/Vignette"
         _VignetteColor ("Vignette Color", Color) = (0,0,0,1)
         _Radius ("Radius", Range(0, 1)) = 0.4
         _Softness ("Softness", Range(0, 1)) = 0.1
-        _OffsetX ("Offset X", Range(0, 1)) = 0.5
-        _OffsetY ("Offset Y", Range(0, 1)) = 0.5
+        _CenterX ("Center X", Range(0, 1)) = 0.5
+        _CenterY ("Center Y", Range(0, 1)) = 0.5
 
         [Space(15)]
         _StencilComp ("Stencil Comparison", Float) = 8
@@ -96,8 +96,8 @@ Shader "UI/Vignette"
             float _UIMaskSoftnessY;
             float _Radius;
             float _Softness;
-            float _OffsetX;
-            float _OffsetY;
+            float _CenterX;
+            float _CenterY;
             int _UIVertexColorAlwaysGammaSpace;
 
             v2f vert(appdata_t v)
@@ -151,7 +151,7 @@ Shader "UI/Vignette"
                 clip (color.a - 0.001);
                 #endif
 
-                float center = distance(IN.texcoord.xy, float2(_OffsetX, 1 - _OffsetY));
+                float center = distance(IN.texcoord.xy, float2(_CenterX, 1 - _CenterY));
                 float vignette = 1 - smoothstep(_Radius, _Radius - _Softness, center);
                 float4 vignetteColor = saturate(_VignetteColor * vignette);
                 color.rgb = lerp(IN.color * color, color * vignetteColor, vignetteColor.a);

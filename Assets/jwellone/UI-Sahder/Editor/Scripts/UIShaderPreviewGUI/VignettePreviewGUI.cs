@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using jwellone;
 
 #nullable enable
 
@@ -10,8 +11,8 @@ namespace jwelloneEditor
         Color _vignetteColor = new Color(0, 0, 0, 1);
         float _radius = 0.4f;
         float _softness = 0.1f;
-        float _offsetX = 0.5f;
-        float _offsetY = 0.5f;
+        float _centerX = 0.5f;
+        float _centerY = 0.5f;
 
 
         public override void OnGUI(EditorWindow parent)
@@ -21,17 +22,17 @@ namespace jwelloneEditor
             _vignetteColor = EditorGUILayout.ColorField("Vignette Color", _vignetteColor);
             _radius = EditorGUILayout.Slider("Radius", _radius, 0f, 1f);
             _softness = EditorGUILayout.Slider("Softness", _softness, 0f, 1f);
-            _offsetX = EditorGUILayout.Slider("Offset X", _offsetX, 0f, 1f);
-            _offsetY = EditorGUILayout.Slider("Offset Y", _offsetY, 0f, 1f);
+            _centerX = EditorGUILayout.Slider("Center X", _centerX, 0f, 1f);
+            _centerY = EditorGUILayout.Slider("Center Y", _centerY, 0f, 1f);
         }
 
         protected override void UpdateMaterialProperty()
         {
-            _material.SetColor("_VignetteColor", _vignetteColor);
-            _material.SetFloat("_Radius", _radius);
-            _material.SetFloat("_Softness", _softness);
-            _material.SetFloat("_OffsetX", _offsetX);
-            _material.SetFloat("_OffsetY", _offsetY);
+            _material.SetColor(UIShaderProperty.vignetteColor, _vignetteColor);
+            _material.SetFloat(UIShaderProperty.radius, _radius);
+            _material.SetFloat(UIShaderProperty.softness, _softness);
+            _material.SetFloat(UIShaderProperty.centerX, _centerX);
+            _material.SetFloat(UIShaderProperty.centerY, _centerY);
         }
 
         protected override Shader? GetShader()

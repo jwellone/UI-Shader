@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using jwellone;
 
 #nullable enable
 
@@ -25,15 +26,15 @@ namespace jwelloneEditor
 
         protected override void UpdateMaterialProperty()
         {
-            _material.SetFloat("_Rate", _rate);
+            _material.SetFloat(UIShaderProperty.rate, _rate);
 
             if (_isUseNTSC)
             {
-                _material.EnableKeyword("GRAYSCALE_NTSC");
+                _material.EnableKeyword(UIShaderProperty.grayscaleNtscKeyword);
             }
             else
             {
-                _material.DisableKeyword("GRAYSCALE_NTSC");
+                _material.DisableKeyword(UIShaderProperty.grayscaleNtscKeyword);
             }
         }
     }

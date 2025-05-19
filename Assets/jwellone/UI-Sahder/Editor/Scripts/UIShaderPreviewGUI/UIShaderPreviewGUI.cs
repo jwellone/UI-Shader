@@ -152,13 +152,13 @@ namespace jwelloneEditor
             Blit(_sourceTexture, _destTexture, _material);
         }
 
-        protected virtual void UpdateMaterialProperty()
-        {
-        }
-
         protected virtual Shader? GetShader()
         {
             return null;
+        }
+
+        protected virtual void UpdateMaterialProperty()
+        {
         }
 
         protected void Blit(Texture2D source, Texture2D dest, Material? material)
@@ -168,7 +168,7 @@ namespace jwelloneEditor
             rt.Release();
 
             RenderTexture.active = rt;
-            
+
             UpdateMaterialProperty();
             Graphics.Blit(source, rt, material);
 

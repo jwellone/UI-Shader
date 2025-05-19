@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using jwellone;
 
 #nullable enable
 
@@ -25,8 +26,8 @@ namespace jwelloneEditor
 
         protected override void UpdateMaterialProperty()
         {
-            _material.SetFloat("_ScaleFactor", _scaleFactor);
-            _material.SetFloat("_ParallaxScale", _parallaxScale);
+            _material.SetFloat(UIShaderProperty.scaleFactor, _scaleFactor);
+            _material.SetFloat(UIShaderProperty.parallaxScale, _parallaxScale);
         }
     }
 }

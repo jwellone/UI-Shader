@@ -1,9 +1,7 @@
 {
-    "name": "jwellone.UIShader.Editor.Scripts",
+    "name": "jwellone.UIShader.Runtime.Scripts",
     "rootNamespace": "",
-    "references": [
-        "GUID:fd96efb75b4924b85a1b662a5313d8f7"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
