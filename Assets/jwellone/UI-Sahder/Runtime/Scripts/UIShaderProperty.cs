@@ -19,6 +19,12 @@ namespace jwellone
         public readonly static int vignetteColor = Shader.PropertyToID("_VignetteColor");
         public readonly static int radius = Shader.PropertyToID("_Radius");
         public readonly static int softness = Shader.PropertyToID("_Softness");
+        public readonly static int emissionColor = Shader.PropertyToID("_EmissionColor");
+        public readonly static int hue = Shader.PropertyToID("_Hue");
+        public readonly static int sat = Shader.PropertyToID("_Sat");
+        public readonly static int val = Shader.PropertyToID("_Val");
+        public readonly static int step = Shader.PropertyToID("_Step");
+        public readonly static int amount = Shader.PropertyToID("_Amount");
 
         public readonly static string grayscaleNtscKeyword = "GRAYSCALE_NTSC";
         public readonly static string radialBlurUseDitherKeyword = "RADIAL_BLUR_USE_DITHER";

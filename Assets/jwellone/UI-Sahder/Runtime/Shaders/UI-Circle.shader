@@ -8,8 +8,8 @@ Shader "UI/Circle"
         _Color ("Tint", Color) = (1,1,1,1)
         _Radius ("Radius", Range(0.0, 1.0)) = 1.0
         _Softness ("Softness", Range(0, 1)) = 0.0
-        _OffsetX ("Offset X", Range(0, 1)) = 0.5
-        _OffsetY ("Offset Y", Range(0, 1)) = 0.5
+        _CenterX ("Center X", Range(0, 1)) = 0.5
+        _CenterY ("Center Y", Range(0, 1)) = 0.5
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -92,8 +92,8 @@ Shader "UI/Circle"
             float _UIMaskSoftnessY;
             float _Radius;
             float _Softness;
-            float _OffsetX;
-            float _OffsetY;
+            float _CenterX;
+            float _CenterY;
             int _UIVertexColorAlwaysGammaSpace;
 
             v2f vert(appdata_t v)
@@ -147,7 +147,7 @@ Shader "UI/Circle"
                 float aspectRatio = _MainTex_TexelSize.z / _MainTex_TexelSize.w;
                 uv.x *= aspectRatio;
 
-                float center = distance(uv, float2(_OffsetX * aspectRatio, 1 - _OffsetY));
+                float center = distance(uv, float2(_CenterX * aspectRatio, 1 - _CenterY));
                 color.a *= smoothstep(_Radius, _Radius - _Softness, center);
 
                 #ifdef UNITY_UI_CLIP_RECT
