@@ -9,18 +9,67 @@ namespace jwelloneEditor
 {
     public abstract class UIShaderPreviewGUI : IPreviewGUI
     {
+        class MaterialGUI
+        {
+            Vector2 _scrollPosition;
+            Material? _target;
+            MaterialEditor? _materialEditor;
+
+            public void OnInspectorGUI(Material? target)
+            {
+                if (_target != target)
+                {
+                    Destroy();
+                }
+
+                _target = target;
+                if (_target == null)
+                {
+                    return;
+                }
+
+                _materialEditor ??= (MaterialEditor)Editor.CreateEditor(_target, typeof(MaterialEditor));
+
+                UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(_materialEditor.target, true);
+
+                _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
+
+                GUILayout.BeginVertical();
+                _materialEditor.OnInspectorGUI();
+                GUILayout.EndVertical();
+
+                EditorGUILayout.EndScrollView();
+            }
+
+            public void Dispose()
+            {
+                Destroy();
+                _target = null;
+            }
+
+            void Destroy()
+            {
+                if (_materialEditor != null)
+                {
+                    GameObject.DestroyImmediate(_materialEditor);
+                    _materialEditor = null;
+                }
+            }
+        }
+
+
         public virtual string displayName
         {
             get => this.GetType().Name.Replace("PreviewGUI", "");
         }
 
         bool _disposed;
-        Vector2 _scrollPosition;
-        MaterialEditor? _materialEditor;
         Material? _cacheMaterial;
         Texture2D? _sourceTexture;
         Texture2D? _destTexture;
         protected Material _material => _cacheMaterial ??= new Material(GetShader());
+
+        static MaterialGUI? _materialGui;
 
         ~UIShaderPreviewGUI()
         {
@@ -81,21 +130,8 @@ namespace jwelloneEditor
 
             EditorGUILayout.EndHorizontal();
 
-            if (_material != null)
-            {
-                _materialEditor ??= (MaterialEditor)Editor.CreateEditor(_material, typeof(MaterialEditor));
-
-                UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(_materialEditor.target, true);
-
-                _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
-
-                GUILayout.BeginVertical();
-                _materialEditor.DrawHeader();
-                _materialEditor.OnInspectorGUI();
-                GUILayout.EndVertical();
-
-                EditorGUILayout.EndScrollView();
-            }
+            _materialGui ??= new MaterialGUI();
+            _materialGui.OnInspectorGUI(_material);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -153,11 +189,8 @@ namespace jwelloneEditor
                 _destTexture = null;
             }
 
-            if (_materialEditor != null)
-            {
-                GameObject.DestroyImmediate(_materialEditor);
-                _materialEditor = null;
-            }
+            _materialGui?.Dispose();
+            _materialGui = null;
         }
 
         void CreateDestTextureIfNeeded(Texture2D? source)
