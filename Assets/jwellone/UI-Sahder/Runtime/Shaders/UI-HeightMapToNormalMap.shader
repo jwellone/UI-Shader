@@ -7,6 +7,7 @@ Shader "UI/HeightMapToNormalMap"
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _ScaleFactor ("Scale Factor", Range(0.0, 1.0)) = 1.0
         _ParallaxScale ("Parallax Scale", Range(0.0, 10.0)) = 5.0
+        [Toggle] _InvertHeight ("Invert Height", Float) = 0
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
         _StencilOp ("Stencil Operation", Float) = 0
@@ -88,6 +89,7 @@ Shader "UI/HeightMapToNormalMap"
             float _UIMaskSoftnessY;
             float _ScaleFactor;
             float _ParallaxScale;
+            float _InvertHeight;
             int _UIVertexColorAlwaysGammaSpace;
 
             v2f vert(appdata_t v)
@@ -148,8 +150,10 @@ Shader "UI/HeightMapToNormalMap"
                 float x2 = tex2Dlod(_MainTex, float4(uv - shiftX, 0, 0)).x;
                 float z1 = tex2Dlod(_MainTex, float4(uv + shiftZ, 0, 0)).x;
                 float z2 = tex2Dlod(_MainTex, float4(uv - shiftZ, 0, 0)).x;
+                _ScaleFactor *= 2 * _InvertHeight - 1;
                 float3 du = { 1, 0, _ScaleFactor * (x1 - x2) };
                 float3 dv = { 0, 1, _ScaleFactor * (z1 - z2) };
+
                 color.rgb = normalize(cross(du, dv)) * 0.5 + 0.5;
                 color.rgb *= color.a;
 
