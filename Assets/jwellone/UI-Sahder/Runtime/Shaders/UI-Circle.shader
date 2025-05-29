@@ -19,6 +19,7 @@ Shader "UI/Circle"
 
         _ColorMask ("Color Mask", Float) = 15
 
+        [Toggle(UNITY_UI_CIRCLE_REVERSE)] _UseUICircleReverse ("Reserve", Float) = 0
         [Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
     }
 
@@ -61,6 +62,7 @@ Shader "UI/Circle"
             #include "UnityUI.cginc"
 
             #pragma multi_compile_local _ UNITY_UI_CLIP_RECT
+            #pragma multi_compile_local _ UNITY_UI_CIRCLE_REVERSE
             #pragma multi_compile_local _ UNITY_UI_ALPHACLIP
 
 
@@ -149,6 +151,11 @@ Shader "UI/Circle"
 
                 float center = distance(uv, float2(_CenterX * aspectRatio, 1 - _CenterY));
                 color.a *= smoothstep(_Radius, _Radius - _Softness, center);
+                float r = _Radius;
+                color.a *= smoothstep(r, r - _Softness, center);
+                #ifdef UNITY_UI_CIRCLE_REVERSE
+                color.a = 1 - color.a;
+                #endif
 
                 #ifdef UNITY_UI_CLIP_RECT
                 half2 m = saturate((_ClipRect.zw - _ClipRect.xy - abs(IN.mask.xy)) * IN.mask.zw);
